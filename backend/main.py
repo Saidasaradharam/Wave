@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 # Google Services: Cloud Logging, Storage, Monitoring, Secret Manager
 from google_services import log_event, GOOGLE_CLOUD_ENABLED, record_metric
@@ -26,7 +27,7 @@ app = FastAPI(title="Wave API", lifespan=lifespan)
 # Security: CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:8000"],
+    allow_origins=["*"],  # Allow Cloud Run URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -70,7 +71,6 @@ app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(activity.router, prefix="/api/activity", tags=["Activity"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["Notifications"])
 
-@app.get("/")
-async def root():
-    """Health check endpoint."""
-    return {"message": "Wave API is running.", "google_cloud_enabled": GOOGLE_CLOUD_ENABLED}
+# Serve frontend static files - MUST BE LAST
+# This catches all routes not matched by API endpoints above
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
