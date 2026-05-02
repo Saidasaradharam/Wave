@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { updateTask, createTask } from '../services/api';
 
 export default function TaskBoard({ tasks, onTaskUpdate }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [addingTask, setAddingTask] = useState(false);
   
   const columns = [
     { id: 'todo', title: 'To Do', color: 'bg-slate-100' },
@@ -13,23 +15,28 @@ export default function TaskBoard({ tasks, onTaskUpdate }) {
 
   const handleMoveTask = async (task, newStatus) => {
     try {
-      const updated = await updateTask(task.id, { status: newStatus });
+      await updateTask(task.id, { status: newStatus });
+      toast.success('Task updated successfully');
       onTaskUpdate();
     } catch (err) {
-      console.error(err);
+      toast.error('Failed to update task');
     }
   };
 
   const handleAddTask = async (e) => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
+    setAddingTask(true);
     try {
       await createTask({ title: newTaskTitle, status: 'todo' });
       setNewTaskTitle('');
       setIsAdding(false);
+      toast.success('Task created successfully');
       onTaskUpdate();
     } catch (err) {
-      console.error(err);
+      toast.error('Failed to create task');
+    } finally {
+      setAddingTask(false);
     }
   };
 
@@ -89,10 +96,13 @@ export default function TaskBoard({ tasks, onTaskUpdate }) {
                     placeholder="Task title..."
                     value={newTaskTitle}
                     onChange={e => setNewTaskTitle(e.target.value)}
+                    disabled={addingTask}
                   />
                   <div className="flex space-x-2">
-                    <button type="submit" className="flex-1 bg-indigo-600 text-white text-xs font-medium py-1.5 rounded">Add</button>
-                    <button type="button" onClick={() => setIsAdding(false)} className="flex-1 bg-slate-200 text-slate-700 text-xs font-medium py-1.5 rounded">Cancel</button>
+                    <button disabled={addingTask} type="submit" className="flex-1 bg-indigo-600 text-white text-xs font-medium py-1.5 rounded disabled:opacity-50">
+                      {addingTask ? 'Saving...' : 'Add'}
+                    </button>
+                    <button disabled={addingTask} type="button" onClick={() => setIsAdding(false)} className="flex-1 bg-slate-200 text-slate-700 text-xs font-medium py-1.5 rounded disabled:opacity-50">Cancel</button>
                   </div>
                 </form>
               ) : (
