@@ -27,9 +27,9 @@ function KanbanBoard({ tasks, onTaskMove, onTaskClick }) {
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex gap-6 overflow-x-auto pb-4 h-full">
+      <div className="flex gap-6 overflow-x-auto pb-4 h-full" role="region" aria-label="Kanban board">
         {Object.values(columns).map(column => (
-          <div key={column.id} className="flex-1 min-w-[320px] bg-slate-100/50 rounded-2xl p-4 flex flex-col max-h-[calc(100vh-14rem)]">
+          <div key={column.id} className="flex-1 min-w-[320px] bg-slate-100/50 rounded-2xl p-4 flex flex-col max-h-[calc(100vh-14rem)]" role="region" aria-label={`${column.title} column, ${column.items.length} tasks`}>
             <h3 className="font-bold text-slate-700 mb-4 px-2 flex justify-between items-center">
               {column.title}
               <span className="bg-white/60 text-slate-500 text-xs px-2 py-1 rounded-full shadow-sm">
@@ -52,6 +52,9 @@ function KanbanBoard({ tasks, onTaskMove, onTaskClick }) {
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                           onClick={() => onTaskClick(task)}
+                          role="button"
+                          aria-label={`Task: ${task.title}, Priority: ${task.priority}`}
+                          tabIndex={0}
                           className={`bg-white p-4 rounded-xl shadow-sm border border-slate-100 cursor-pointer transition-all ${snapshot.isDragging ? 'shadow-xl rotate-2 scale-105 ring-2 ring-indigo-500 ring-offset-2 z-50' : 'hover:shadow-md hover:-translate-y-0.5'}`}
                         >
                           <div className="flex justify-between items-start mb-2">

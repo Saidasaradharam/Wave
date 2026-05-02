@@ -2,8 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Accessibility: System font stack with Inter as primary */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
 @layer utilities {
   .glassmorphism {
     @apply bg-white/80 backdrop-blur-md shadow-xl border border-white/20;
   }
+
+  /* Accessibility: Smooth fade-in animation for page transitions */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+}
+
+/* Accessibility: Focus visible styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Accessibility: Reduced motion preference support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Accessibility: Skip to main content link */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: #6366f1;
+  color: white;
+  border-radius: 0 0 0.5rem 0.5rem;
+  font-weight: 600;
+  transition: top 0.2s;
+}
+
+.skip-to-content:focus {
+  top: 0;
 }

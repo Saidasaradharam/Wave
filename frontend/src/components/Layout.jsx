@@ -44,13 +44,18 @@ function NotificationBell() {
 
   return (
     <div className="relative" ref={dropdownRef}>
+      {/* Accessibility: aria-label and aria-expanded for screen readers */}
       <button 
+        id="notification-bell-btn"
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
         className="relative p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"
       >
-        <Bell className="w-6 h-6" />
+        <Bell className="w-6 h-6" aria-hidden="true" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 flex h-3 w-3">
+          <span className="absolute top-1 right-1 flex h-3 w-3" aria-hidden="true">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
           </span>
@@ -58,24 +63,35 @@ function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+        <div
+          id="notification-dropdown"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Notifications panel"
+          className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50"
+        >
           <div className="p-4 border-b border-slate-100 bg-slate-50">
-            <h3 className="font-bold text-slate-800">Notifications</h3>
+            <h3 className="font-bold text-slate-800" id="notification-title">Notifications</h3>
           </div>
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto" role="list" aria-labelledby="notification-title">
             {notifications.length === 0 ? (
-              <div className="p-4 text-center text-slate-500">No notifications</div>
+              <div className="p-4 text-center text-slate-500" role="listitem">No notifications</div>
             ) : (
               notifications.map((notif) => (
-                <div key={notif.id} className={`p-4 border-b border-slate-50 flex items-start justify-between ${notif.read ? 'bg-white opacity-60' : 'bg-indigo-50/30'}`}>
+                <div
+                  key={notif.id}
+                  role="listitem"
+                  className={`p-4 border-b border-slate-50 flex items-start justify-between ${notif.read ? 'bg-white opacity-60' : 'bg-indigo-50/30'}`}
+                >
                   <p className="text-sm text-slate-700">{notif.content}</p>
                   {!notif.read && (
                     <button 
                       onClick={(e) => markAsRead(notif.id, e)}
                       className="p-1 hover:bg-indigo-100 rounded-full text-indigo-600 transition-colors"
+                      aria-label={`Mark notification as read: ${notif.content}`}
                       title="Mark as read"
                     >
-                      <Check className="w-4 h-4" />
+                      <Check className="w-4 h-4" aria-hidden="true" />
                     </button>
                   )}
                 </div>
@@ -93,7 +109,16 @@ function Layout({ children, onLogout }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50">
-      <nav className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm sticky top-0 z-40">
+      {/* Accessibility: Skip to main content link for keyboard users */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
+      <nav
+        className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm sticky top-0 z-40"
+        role="navigation"
+        aria-label="Main navigation"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
@@ -104,7 +129,9 @@ function Layout({ children, onLogout }) {
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <Link
+                  id="nav-projects"
                   to="/projects"
+                  aria-current={location.pathname.startsWith('/projects') ? 'page' : undefined}
                   className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                     location.pathname.startsWith('/projects')
                       ? 'border-indigo-500 text-slate-900'
@@ -114,7 +141,9 @@ function Layout({ children, onLogout }) {
                   Projects
                 </Link>
                 <Link
+                  id="nav-dashboard"
                   to="/dashboard"
+                  aria-current={location.pathname === '/dashboard' ? 'page' : undefined}
                   className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                     location.pathname === '/dashboard'
                       ? 'border-indigo-500 text-slate-900'
@@ -128,18 +157,21 @@ function Layout({ children, onLogout }) {
             <div className="flex items-center space-x-4">
               <NotificationBell />
               <button
+                id="logout-btn"
                 onClick={onLogout}
                 className="flex items-center space-x-1 text-slate-500 hover:text-rose-600 transition-colors"
+                aria-label="Log out"
                 title="Logout"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-5 h-5" aria-hidden="true" />
               </button>
             </div>
           </div>
         </div>
       </nav>
 
-      <main className="p-8">
+      {/* Accessibility: Main content landmark with id for skip link */}
+      <main id="main-content" className="p-8" role="main">
         {children}
       </main>
     </div>

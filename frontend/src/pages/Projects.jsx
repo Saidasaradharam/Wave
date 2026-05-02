@@ -58,8 +58,10 @@ function Projects() {
           <p className="text-slate-600">Manage your team projects and collaborations.</p>
         </div>
         <button 
+          id="create-project-btn"
           onClick={() => setShowCreateModal(true)}
           className="flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+          aria-label="Create a new project"
         >
           <Plus className="w-5 h-5" />
           <span>New Project</span>
@@ -88,16 +90,18 @@ function Projects() {
       </div>
 
       {showCreateModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="create-project-title">
           <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full border border-slate-100 transform transition-all">
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">Create New Project</h2>
+            <h2 id="create-project-title" className="text-2xl font-bold text-slate-800 mb-6">Create New Project</h2>
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Project Name</label>
                 <input 
                   type="text" 
                   name="name" 
+                  id="project-name-input"
                   required 
+                  aria-required="true"
                   className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 />
               </div>
@@ -128,6 +132,7 @@ function Projects() {
                   Cancel
                 </button>
                 <button 
+                  id="create-project-submit-btn"
                   type="submit"
                   className="flex-1 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
                 >
